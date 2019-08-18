@@ -13,69 +13,73 @@ import java.util.List;
 
 public class ZookeeperClient {
     private static final String ZKServers = "192.168.9.103:2181,192.168.9.104:2181,192.168.9.115:2181";
-    ZkClient zkClient= null;
+    ZkClient zkClient = null;
+
     @Before
-    public void init(){
-        zkClient = new ZkClient(ZKServers,10000,10000,new SerializableSerializer());
+    public void init() {
+        zkClient = new ZkClient(ZKServers, 10000, 10000, new SerializableSerializer());
 
         System.out.println("conneted ok!");
 
     }
+
     /**
      * 数据的增删改查
-     *
      */
 
     // 创建数据节点到zk中
     @Test
-    public void testCreate(){
+    public void testCreate() {
         String nodeCreated = zkClient.create("/idea/myabc", "hellozk", CreateMode.PERSISTENT);
         //输出创建节点的路径
-        System.out.println("created path:"+nodeCreated);
+        System.out.println("created path:" + nodeCreated);
     }
 
     //判断znode是否存在
     @Test
-    public void testExist(){
+    public void testExist() {
 
         boolean exist = zkClient.exists("/idea");
         //返回 true表示节点存在 ，false表示不存在
-        System.out.println("节点是否存在:"+exist);
+        System.out.println("节点是否存在:" + exist);
 
     }
 
     //获取znode的数据
     @Test
     public void getData() {
-        Stat stat=new Stat();
-        String znodeData= zkClient.readData("/idea", stat);
-        System.out.println("节点数据为："+znodeData);
+        Stat stat = new Stat();
+        String znodeData = zkClient.readData("/idea", stat);
+        System.out.println("节点数据为：" + znodeData);
         System.out.println(stat);
 
     }
 
     //删除znode
     @Test
-    public void deleteZnode(){
+    public void deleteZnode() {
 
         //删除单独一个节点，返回true表示成功
         boolean e1 = zkClient.delete("/eclipse");
-        System.out.println("是否成功删除单节点："+e1);
+        System.out.println("是否成功删除单节点：" + e1);
     }
+
     //删除znode
     @Test
-    public void deleteZnodes(){
+    public void deleteZnodes() {
 
         //删除含有子节点的节点
         boolean e2 = zkClient.deleteRecursive("/app1");
-        System.out.println("是否成功删除含有子节点的节点："+e2);
+        System.out.println("是否成功删除含有子节点的节点：" + e2);
 
     }
+
     //更新数据
     @Test
-    public void updateData(){
-        zkClient.writeData("/idea","update zk data  11112222");
+    public void updateData() {
+        zkClient.writeData("/idea", "update zk data  11112222");
     }
+
     //订阅节点的信息改变（创建节点，删除节点，添加子节点）
     @Test
     public void childChange() throws InterruptedException {
@@ -86,6 +90,7 @@ public class ZookeeperClient {
         Thread.sleep(Integer.MAX_VALUE);
 
     }
+
     private static class ZKChildListener implements IZkChildListener {
         /**
          * handleChildChange： 用来处理服务器端发送过来的通知
@@ -94,8 +99,8 @@ public class ZookeeperClient {
          */
         public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
 
-            System.out.println("父节点路径为："+parentPath);
-            System.out.println("变化的子节点有："+currentChilds.toString());
+            System.out.println("父节点路径为：" + parentPath);
+            System.out.println("变化的子节点有：" + currentChilds.toString());
 
         }
 
@@ -113,12 +118,12 @@ public class ZookeeperClient {
 
         public void handleDataChange(String dataPath, Object data) throws Exception {
 
-            System.out.println("节点"+dataPath+"数据改变成:"+data.toString());
+            System.out.println("节点" + dataPath + "数据改变成:" + data.toString());
         }
 
         public void handleDataDeleted(String dataPath) throws Exception {
 
-            System.out.println(dataPath+"节点数据被删除");
+            System.out.println(dataPath + "节点数据被删除");
 
         }
 

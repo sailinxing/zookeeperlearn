@@ -50,14 +50,16 @@ public class SimpleZkClient {
         String nodeCreated = zkClient.create("/idea", "hellozk".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
         //上传的数据可以是任何类型，但都要转成byte[]
     }
+
     //判断znode是否存在
     @Test
-    public void testExist() throws Exception{
+    public void testExist() throws Exception {
         Stat stat = zkClient.exists("/eclipse", false);
-        System.out.println(stat==null?"not exist":"exist");
+        System.out.println(stat == null ? "not exist" : "exist");
 
 
     }
+
     // 获取子节点
     @Test
     public void getChildren() throws Exception {
@@ -86,6 +88,7 @@ public class SimpleZkClient {
 
 
     }
+
     //删除znode
     @Test
     public void setData() throws Exception {

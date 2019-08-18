@@ -14,13 +14,14 @@ import java.util.Random;
 public class DistributedClientLock {
     // zookeeper集群地址
     private static final String ZKServers = "192.168.9.103:2181,192.168.9.104:2181,192.168.9.115:2181";
-    ZkClient zkClient= null;
+    ZkClient zkClient = null;
     private String groupNode = "locks";
     private String subNode = "sub";
     // 记录自己创建的子节点路径
     private volatile String thisPath;
+
     public void connectZookeeper() throws Exception {
-        zkClient = new ZkClient(ZKServers,10000,10000,new SerializableSerializer());
+        zkClient = new ZkClient(ZKServers, 10000, 10000, new SerializableSerializer());
         System.out.println("conneted ok!");
         // 1、程序一进来就先注册一把锁到zk上
         thisPath = zkClient.create("/" + groupNode + "/" + subNode, null, CreateMode.EPHEMERAL_SEQUENTIAL);
@@ -37,22 +38,22 @@ public class DistributedClientLock {
         zkClient.subscribeChildChanges("/" + groupNode, new ZKChildListener());
     }
 
-    public  class ZKChildListener implements IZkChildListener {
+    public class ZKChildListener implements IZkChildListener {
         @Override
         public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-                   //获取子节点，并对父节点进行监听
-                        List<String> childrenNodes = zkClient.getChildren("/" + groupNode);
-                        String thisNode = thisPath.substring(("/" + groupNode + "/").length());
-                       // 去比较是否自己是最小id
-                       Collections.sort(childrenNodes);
-                       if (childrenNodes.indexOf(thisNode) == 0) {
-                            //访问共享资源处理业务，并且在处理完成之后删除锁
-                            doSomething();
+            //获取子节点，并对父节点进行监听
+            List<String> childrenNodes = zkClient.getChildren("/" + groupNode);
+            String thisNode = thisPath.substring(("/" + groupNode + "/").length());
+            // 去比较是否自己是最小id
+            Collections.sort(childrenNodes);
+            if (childrenNodes.indexOf(thisNode) == 0) {
+                //访问共享资源处理业务，并且在处理完成之后删除锁
+                doSomething();
 
-                           //重新注册一把新的锁
-                           thisPath = zkClient.create("/" + groupNode + "/" + subNode, null,
-                                    CreateMode.EPHEMERAL_SEQUENTIAL);
-                        }
+                //重新注册一把新的锁
+                thisPath = zkClient.create("/" + groupNode + "/" + subNode, null,
+                        CreateMode.EPHEMERAL_SEQUENTIAL);
+            }
         }
 
     }
