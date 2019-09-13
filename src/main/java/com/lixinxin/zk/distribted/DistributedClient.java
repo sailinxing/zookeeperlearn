@@ -1,6 +1,5 @@
 package com.lixinxin.zk.distribted;
 
-import com.lixinxin.zk.ZookeeperClient;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.serialize.SerializableSerializer;
